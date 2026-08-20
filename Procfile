@@ -1,1 +1,1 @@
-gunicorn landslide_website.app:app
+gunicorn app:app
