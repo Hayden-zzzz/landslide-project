@@ -9,7 +9,7 @@ from datetime import datetime
 
 # ---------- Configuration ----------
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY', 'fallback-dev-key')
 
 # Paths – adjust if models are in a subfolder
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +18,7 @@ SCALER_PATH = os.path.join(BASE_DIR, 'models', 'scaler.pkl')
 ENCODER_PATH = os.path.join(BASE_DIR, 'models', 'label_encoder.pkl')
 
 # OpenWeatherMap API
-WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY', 'YOUR_API_KEY')
+WEATHER_API_KEY = os.getenv('WEATHER_API_KEY', '')
 WEATHER_CITY = 'Silang,PH'
 
 # ---------- Database functions ----------
