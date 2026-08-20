@@ -1,0 +1,41 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database (optional – you may want to keep it, but better to exclude)
+instance/*.db
+instance/*.sqlite
+
+# Environment variables (if any)
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# The weather cache (if you created one)
+weather_cache.json
+
+# The analysis output images / reports – you can include them if you want
+# but they are generated, so better to exclude them from version control.
+# If you want to keep them, remove these lines:
+logistic_analysis_report.txt
+logistic_analysis_coefficients.png
+performance_comparison.png
+confusion_matrices.png
+feature_importance.png
+logistic_coefficients.png
+roc_curves_logistic.png
