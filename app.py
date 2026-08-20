@@ -6,35 +6,30 @@ import numpy as np
 from flask import Flask, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # ---------- Configuration ----------
 app = Flask(__name__)
-app.secret_key = 'SECRET_KEY'  # CHANGE THIS in production
+app.secret_key = os.environ.get('SECRET_KEY')
 
-# Base directory
+# Paths – adjust if models are in a subfolder
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Paths to ML artifacts (adjust if needed)
 MODEL_PATH = os.path.join(BASE_DIR, 'models', 'logistic_model.pkl')
 SCALER_PATH = os.path.join(BASE_DIR, 'models', 'scaler.pkl')
 ENCODER_PATH = os.path.join(BASE_DIR, 'models', 'label_encoder.pkl')
 
 # OpenWeatherMap API
-WEATHER_API_KEY = 'WEATHER_API_KEY'   # Replace with your key
+WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY', 'YOUR_API_KEY')
 WEATHER_CITY = 'Silang,PH'
 
 # ---------- Database functions ----------
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        # Use app.instance_path (defaults to 'instance' folder in app root)
-        db_path = os.path.join(app.instance_path, 'users.db')
-        # Ensure the instance folder exists
-        os.makedirs(app.instance_path, exist_ok=True)
-        db = g._database = sqlite3.connect(db_path)
+        # Ensure instance folder exists
+        instance_path = os.path.join(BASE_DIR, 'instance')
+        if not os.path.exists(instance_path):
+            os.makedirs(instance_path)
+        db = g._database = sqlite3.connect(os.path.join(instance_path, 'users.db'))
         db.row_factory = sqlite3.Row
     return db
 
@@ -57,14 +52,20 @@ def init_db():
         ''')
         db.commit()
 
-# ---------- Load ML models ----------
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
-encoder = joblib.load(ENCODER_PATH)
+# ---------- Load ML model ----------
+# Load with error handling
+try:
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    encoder = joblib.load(ENCODER_PATH)
+except Exception as e:
+    app.logger.error(f"Failed to load ML models: {e}")
+    model = scaler = encoder = None
 
 # ---------- Weather helper ----------
 def get_weather():
-    """Fetch current weather from OpenWeatherMap, return safe numeric values."""
+    if not WEATHER_API_KEY or WEATHER_API_KEY == 'YOUR_API_KEY':
+        return {'temp': '--', 'humidity': '--', 'rainfall': 0.0, 'description': 'API key missing', 'city': 'Silang'}
     try:
         url = f'https://api.openweathermap.org/data/2.5/weather?q={WEATHER_CITY}&appid={WEATHER_API_KEY}&units=metric'
         resp = requests.get(url, timeout=5)
@@ -72,16 +73,15 @@ def get_weather():
         if resp.status_code == 200:
             rain = data.get('rain', {}).get('1h', 0.0)
             return {
-                'temp': float(data['main']['temp']),
-                'humidity': int(data['main']['humidity']),
-                'rainfall': float(rain),
+                'temp': data['main']['temp'],
+                'humidity': data['main']['humidity'],
+                'rainfall': rain,
                 'description': data['weather'][0]['description'],
                 'city': data['name']
             }
     except Exception as e:
-        print('Weather API error:', e)
-    # Fallback with numeric defaults
-    return {'temp': 0.0, 'humidity': 0, 'rainfall': 0.0, 'description': 'N/A', 'city': 'Silang'}
+        app.logger.error(f"Weather API error: {e}")
+    return {'temp': '--', 'humidity': '--', 'rainfall': 0.0, 'description': 'N/A', 'city': 'Silang'}
 
 # ---------- Historical data (placeholder) ----------
 def get_historical_data():
@@ -110,7 +110,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
         db = get_db()
-        user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        try:
+            user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        except Exception as e:
+            app.logger.error(f"Login DB error: {e}")
+            flash('Database error', 'danger')
+            return render_template('login.html')
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
