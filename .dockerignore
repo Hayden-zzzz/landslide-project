@@ -12,5 +12,4 @@ logistic_analysis.py
 logistic_model.py
 landslide_dataset.csv
 *.png
-*.txt
 *.md
