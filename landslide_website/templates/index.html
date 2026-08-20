@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left: Welcome & Stats -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="card p-6">
+            <h1 class="text-3xl font-bold text-[#2d3748] flex items-center">
+                <i class="fas fa-flag text-rose-500 mr-3"></i> Welcome, {{ session.username }}!
+            </h1>
+            <p class="text-gray-600 mt-2">Monitor landslide risk in <strong>Purok 3, Barangay Santol</strong> using real‑time weather data and machine learning.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div class="bg-serene bg-opacity-30 p-3 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-[#2d3748]">87%</div>
+                    <div class="text-sm text-gray-600">Accuracy</div>
+                </div>
+                <div class="bg-rose bg-opacity-30 p-3 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-[#2d3748]">8</div>
+                    <div class="text-sm text-gray-600">Incidents</div>
+                </div>
+                <div class="bg-serene bg-opacity-30 p-3 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-[#2d3748]">{{ weather.temp }}°C</div>
+                    <div class="text-sm text-gray-600">Temperature</div>
+                </div>
+                <div class="bg-rose bg-opacity-30 p-3 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-[#2d3748]">{{ weather.rainfall }} mm/h</div>
+                    <div class="text-sm text-gray-600">Rainfall</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map placeholder -->
+        <div class="card p-4">
+            <h2 class="text-xl font-semibold text-[#2d3748] flex items-center">
+                <i class="fas fa-map-marked-alt text-rose-600 mr-2"></i> Barangay Santol, Silang
+            </h2>
+            <div class="mt-2 bg-gray-200 rounded-lg overflow-hidden h-48 flex items-center justify-center text-gray-500">
+                <div class="text-center">
+                    <i class="fas fa-map fa-3x text-gray-400"></i>
+                    <p class="mt-1">Map placeholder – integrate Leaflet later</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Weather & Quick Actions -->
+    <div class="space-y-6">
+        <!-- Weather Card -->
+        <div class="card p-5">
+            <h3 class="text-lg font-semibold text-[#2d3748] flex items-center">
+                <i class="fas fa-cloud-sun-rain text-rose-500 mr-2"></i> Current Weather
+            </h3>
+            <div class="flex items-center justify-between mt-2">
+                <div>
+                    <p class="text-3xl font-bold">{{ weather.temp }}°C</p>
+                    <p class="text-gray-600">{{ weather.description|capitalize }}</p>
+                </div>
+                <i class="fas fa-{{ 'sun' if weather.temp > 25 else 'cloud-rain' }} text-5xl text-rose-300"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
+                <div><i class="fas fa-tint text-blue-500"></i> Humidity: {{ weather.humidity }}%</div>
+                <div><i class="fas fa-wind text-blue-300"></i> Rainfall: {{ weather.rainfall }} mm/h</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-2"><i class="far fa-clock"></i> Updated just now</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card p-5">
+            <h3 class="text-lg font-semibold text-[#2d3748] flex items-center">
+                <i class="fas fa-bolt text-rose-500 mr-2"></i> Quick Actions
+            </h3>
+            <div class="grid grid-cols-2 gap-3 mt-2">
+                <a href="{{ url_for('predict') }}" class="btn-primary p-3 rounded-lg text-center flex flex-col items-center">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                    <span class="text-sm mt-1">Predict</span>
+                </a>
+                <a href="{{ url_for('camera') }}" class="btn-secondary p-3 rounded-lg text-center flex flex-col items-center">
+                    <i class="fas fa-video text-2xl"></i>
+                    <span class="text-sm mt-1">Camera</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="btn-secondary p-3 rounded-lg text-center flex flex-col items-center">
+                    <i class="fas fa-history text-2xl"></i>
+                    <span class="text-sm mt-1">History</span>
+                </a>
+                <a href="{{ url_for('weather_page') }}" class="btn-primary p-3 rounded-lg text-center flex flex-col items-center">
+                    <i class="fas fa-cloud text-2xl"></i>
+                    <span class="text-sm mt-1">Weather</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

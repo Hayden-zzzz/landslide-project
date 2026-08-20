@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto card p-6 md:p-8">
+    <h2 class="text-2xl font-bold text-[#2d3748] flex items-center">
+        <i class="fas fa-robot text-rose-500 mr-3"></i> Landslide Risk Prediction
+    </h2>
+    <p class="text-gray-600 mt-1 mb-6">
+        <i class="fas fa-cloud-rain text-blue-400"></i> Rainfall intensity from weather API: 
+        <span class="font-semibold">{{ rainfall_intensity }} mm/h</span>
+        <span class="text-sm text-gray-400">(you can override below)</span>
+    </p>
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label class="block font-medium text-gray-700"><i class="fas fa-angle-double-up text-rose-400 mr-1"></i> Slope Angle (°)</label>
+            <input type="number" step="0.1" name="slope" required 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 transition" 
+                   placeholder="e.g. 75">
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700"><i class="fas fa-tint text-blue-400 mr-1"></i> Rainfall Infiltration (seconds)</label>
+            <input type="number" step="0.1" name="infiltration" required 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 transition" 
+                   placeholder="e.g. 30">
+        </div>
+        <div>
+            <label class="block font-medium text-gray-700"><i class="fas fa-cloud-rain text-blue-600 mr-1"></i> Rainfall Intensity (mm/h) – optional override</label>
+            <input type="number" step="0.1" name="manual_intensity" 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 transition" 
+                   placeholder="Leave blank to use API value">
+        </div>
+        <button type="submit" class="w-full btn-primary font-bold py-3 rounded-lg transition flex items-center justify-center space-x-2">
+            <i class="fas fa-calculator"></i>
+            <span>Predict Risk</span>
+        </button>
+    </form>
+
+    {% if prediction %}
+    <div class="mt-8 p-6 rounded-xl border-2 
+        {% if prediction.risk == 'High Risk' %} border-red-500 bg-red-50
+        {% elif prediction.risk == 'Medium Risk' %} border-yellow-500 bg-yellow-50
+        {% else %} border-green-500 bg-green-50 {% endif %}">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold flex items-center">
+                <i class="fas fa-exclamation-triangle 
+                    {% if prediction.risk == 'High Risk' %} text-red-600
+                    {% elif prediction.risk == 'Medium Risk' %} text-yellow-600
+                    {% else %} text-green-600 {% endif %} mr-2"></i>
+                Risk: {{ prediction.risk }}
+            </h3>
+            <span class="text-sm text-gray-500">
+                <i class="far fa-calendar-alt"></i> {{ now.strftime('%Y-%m-%d %H:%M') if now else '' }}
+            </span>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-4 text-sm">
+            <div><span class="font-medium">Slope</span> {{ prediction.slope }}°</div>
+            <div><span class="font-medium">Intensity</span> {{ prediction.intensity }} mm/h</div>
+            <div><span class="font-medium">Infiltration</span> {{ prediction.infiltration }}s</div>
+        </div>
+
+        <h4 class="font-semibold mt-4 mb-2">Probability Distribution</h4>
+        <div class="space-y-2">
+            {% for label, prob in prediction.probabilities.items() %}
+            <div>
+                <div class="flex justify-between text-sm">
+                    <span class="font-medium">{{ label }}</span>
+                    <span>{{ "%.1f"|format(prob*100) }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div class="h-full rounded-full 
+                        {% if label == 'High Risk' %} bar-high
+                        {% elif label == 'Medium Risk' %} bar-medium
+                        {% else %} bar-low {% endif %}" 
+                        style="width: {{ prob*100 }}%; transition: width 0.8s ease;">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

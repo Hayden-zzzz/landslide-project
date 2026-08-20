@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>⛰️ Landslide Watch · Purok 3, Santol</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Custom CSS with our colour palette -->
+    <style>
+        /* ---- Colour variables ---- */
+        :root {
+            --serenity: #B3CEE5;
+            --rose-quartz: #F7CAC9;
+            --serenity-dark: #8eb3d1;
+            --rose-dark: #eeb6b5;
+            --text-primary: #2d3748;
+            --text-light: #4a5568;
+        }
+
+        /* ---- Global background ---- */
+        body {
+            background: linear-gradient(135deg, #f7fafc 0%, #e8f0f8 100%);
+        }
+
+        /* ---- Custom background classes ---- */
+        .bg-serene {
+            background-color: var(--serenity);
+        }
+        .bg-serene-dark {
+            background-color: var(--serenity-dark);
+        }
+        .bg-rose {
+            background-color: var(--rose-quartz);
+        }
+        .bg-rose-dark {
+            background-color: var(--rose-dark);
+        }
+
+        /* ---- Text colours ---- */
+        .text-serene {
+            color: var(--serenity);
+        }
+        .text-rose {
+            color: var(--rose-quartz);
+        }
+
+        /* ---- Borders & accents ---- */
+        .border-serene {
+            border-color: var(--serenity);
+        }
+        .border-rose {
+            border-color: var(--rose-quartz);
+        }
+
+        /* ---- Buttons ---- */
+        .btn-primary {
+            background-color: var(--rose-quartz);
+            color: #2d3748;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--rose-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(247, 202, 201, 0.4);
+        }
+        .btn-secondary {
+            background-color: var(--serenity);
+            color: #2d3748;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: var(--serenity-dark);
+            transform: translateY(-1px);
+        }
+
+        /* ---- Navigation ---- */
+        .nav-gradient {
+            background: linear-gradient(135deg, var(--serenity), var(--serenity-dark));
+        }
+        .nav-link {
+            color: #2d3748;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            color: var(--rose-dark);
+            background: rgba(247, 202, 201, 0.2);
+        }
+        .nav-link-active {
+            border-bottom: 2px solid var(--rose-quartz);
+        }
+
+        /* ---- Cards ---- */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(179, 206, 229, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(179, 206, 229, 0.35);
+        }
+
+        /* ---- Risk badges (keep distinct) ---- */
+        .badge-high {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        .badge-medium {
+            background: #fde68a;
+            color: #92400e;
+        }
+        .badge-low {
+            background: #bbf7d0;
+            color: #166534;
+        }
+
+        /* ---- Probability bars ---- */
+        .bar-high { background: #ef4444; }
+        .bar-medium { background: #f59e0b; }
+        .bar-low { background: #22c55e; }
+
+        /* ---- Flash messages with new palette ---- */
+        .flash-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        .flash-danger {
+            background: #fce4e4;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        .flash-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e3a8a;
+        }
+
+        /* ---- Misc ---- */
+        .footer-gradient {
+            background: linear-gradient(135deg, var(--serenity-dark), var(--serenity));
+        }
+        .focus-ring:focus {
+            outline: none;
+            ring: 2px solid var(--rose-quartz);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-[#2d3748]">
+
+    <!-- Navigation with new colours -->
+    <nav class="nav-gradient shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <a href="{{ url_for('index') }}" class="text-2xl font-bold flex items-center space-x-2 text-[#2d3748]">
+                <i class="fas fa-mountain text-rose-500"></i>
+                <span>Landslide Watch</span>
+            </a>
+            <div class="flex items-center space-x-1 md:space-x-4 flex-wrap">
+                <a href="{{ url_for('index') }}" class="nav-link px-2 py-1 rounded {{ 'nav-link-active' if request.endpoint == 'index' else '' }}">
+                    <i class="fas fa-home"></i> <span class="hidden sm:inline">Dashboard</span>
+                </a>
+                <a href="{{ url_for('predict') }}" class="nav-link px-2 py-1 rounded {{ 'nav-link-active' if request.endpoint == 'predict' else '' }}">
+                    <i class="fas fa-chart-line"></i> <span class="hidden sm:inline">Predict</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="nav-link px-2 py-1 rounded {{ 'nav-link-active' if request.endpoint == 'history' else '' }}">
+                    <i class="fas fa-history"></i> <span class="hidden sm:inline">History</span>
+                </a>
+                <a href="{{ url_for('weather_page') }}" class="nav-link px-2 py-1 rounded {{ 'nav-link-active' if request.endpoint == 'weather_page' else '' }}">
+                    <i class="fas fa-cloud-sun"></i> <span class="hidden sm:inline">Weather</span>
+                </a>
+                <a href="{{ url_for('camera') }}" class="nav-link px-2 py-1 rounded {{ 'nav-link-active' if request.endpoint == 'camera' else '' }}">
+                    <i class="fas fa-video"></i> <span class="hidden sm:inline">Camera</span>
+                </a>
+                {% if session.user_id %}
+                    <span class="text-sm bg-white bg-opacity-30 px-3 py-1 rounded-full flex items-center">
+                        <i class="fas fa-user-circle mr-1"></i> {{ session.username }}
+                    </span>
+                    <a href="{{ url_for('logout') }}" class="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded-full text-sm transition flex items-center">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message p-3 rounded-lg mb-2 shadow flex items-center 
+                        {% if category == 'success' %} flash-success
+                        {% elif category == 'danger' %} flash-danger
+                        {% else %} flash-info {% endif %}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' }} mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer with new gradient -->
+    <footer class="footer-gradient text-[#2d3748] text-center py-4 mt-8">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; 2026 Purok 3, Barangay Santol, Silang City, Cavite</p>
+            <div class="flex space-x-4 mt-2 md:mt-0">
+                <a href="#" class="hover:text-rose-600"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-rose-600"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-rose-600"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auto-hide flash messages -->
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 4000);
+    </script>
+</body>
+</html>

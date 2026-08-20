@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Main weather -->
+    <div class="md:col-span-2 bg-white rounded-xl shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-cloud-sun text-yellow-500 mr-3"></i> Weather Monitoring
+        </h2>
+        <div class="flex flex-col md:flex-row items-center justify-between mt-4">
+            <div class="flex items-center">
+                <i class="fas fa-{{ 'sun' if weather.temp > 25 else 'cloud-rain' }} text-6xl text-yellow-400 mr-4"></i>
+                <div>
+                    <p class="text-4xl font-bold">{{ weather.temp }}°C</p>
+                    <p class="text-gray-600">{{ weather.description|capitalize }}</p>
+                    <p class="text-sm text-gray-400"><i class="fas fa-map-marker-alt"></i> {{ weather.city }}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-sm mt-4 md:mt-0">
+                <div><i class="fas fa-tint text-blue-500"></i> Humidity: {{ weather.humidity }}%</div>
+                <div><i class="fas fa-cloud-rain text-blue-400"></i> Rainfall: {{ weather.rainfall }} mm/h</div>
+                <div><i class="fas fa-wind text-gray-500"></i> Wind: -- km/h</div>
+                <div><i class="fas fa-compress-arrows-alt text-gray-500"></i> Pressure: -- hPa</div>
+            </div>
+        </div>
+        <div class="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-500">
+            <i class="fas fa-info-circle"></i> Data from OpenWeatherMap – updated every 10 minutes.
+        </div>
+    </div>
+
+    <!-- Forecast placeholder -->
+    <div class="bg-white rounded-xl shadow-xl p-6">
+        <h3 class="text-lg font-semibold text-gray-700 flex items-center">
+            <i class="fas fa-calendar-week text-blue-500 mr-2"></i> 3‑Day Forecast
+        </h3>
+        <div class="space-y-3 mt-3">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                <span>Today</span>
+                <i class="fas fa-cloud-sun text-yellow-400"></i>
+                <span>{{ weather.temp }}°C</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                <span>Tomorrow</span>
+                <i class="fas fa-cloud-rain text-blue-300"></i>
+                <span>-- °C</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span>Day after</span>
+                <i class="fas fa-cloud text-gray-400"></i>
+                <span>-- °C</span>
+            </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-4"><i class="fas fa-sync-alt"></i> Forecast integration pending</p>
+    </div>
+</div>
+{% endblock %}
