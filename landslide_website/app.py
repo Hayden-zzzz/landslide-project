@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ---------- Configuration ----------
-app = Flask(__landslide__)
+app = Flask(__name__)
 app.secret_key = 'SECRET_KEY'  # CHANGE THIS in production
 
 # Base directory
